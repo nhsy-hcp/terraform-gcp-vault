@@ -1,0 +1,18 @@
+---
+- name: Checking input variables
+  include_tasks: check_input.yml
+
+- name: Installing Vault via the HashiCorp repository
+  include_tasks: repository_install.yml
+  when: use_hashicorp_repository
+
+- name: Laying out OS level configurations
+  include_tasks: os_level_configuration.yml
+
+- name: Installing Vault via direct archive
+  include_tasks: manual_install.yml
+  when: not use_hashicorp_repository
+
+- name: Laying out remaining items if not a packer image
+  include_tasks: non_packer_install.yml
+  when: not packer_build

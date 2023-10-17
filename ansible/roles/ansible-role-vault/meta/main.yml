@@ -1,0 +1,20 @@
+galaxy_info:
+  role_name: vault
+  author: jacobmammoliti
+  description: HashiCorp Vault for Linux.
+  license: BSD
+  min_ansible_version: 2.11
+  platforms:
+    - name: Ubuntu
+      versions:
+        - 20.04
+        - 18.04
+    - name: CentOS
+      versions:
+        - 7
+        - 8
+  galaxy_tags:
+    - hashicorp
+    - vault
+
+dependencies: []

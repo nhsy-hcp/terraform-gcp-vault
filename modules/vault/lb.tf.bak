@@ -1,0 +1,45 @@
+resource "google_compute_region_health_check" "default" {
+  name                = "vault-hc-${var.unique_id}"
+  check_interval_sec  = 10
+  timeout_sec         = 5
+  healthy_threshold   = 3
+  unhealthy_threshold = 5
+  ssl_health_check {
+    port    = "8200"
+    request = "/v1/sys/health"
+  }
+}
+
+resource "google_compute_region_backend_service" "default" {
+  provider = google-beta
+
+  name                  = "vault-lb-${var.unique_id}"
+  region                = var.region
+  protocol              = "TCP"
+  load_balancing_scheme = "EXTERNAL"
+  timeout_sec           = 10
+  health_checks         = [google_compute_region_health_check.default.id]
+
+  log_config {
+    enable      = true
+    sample_rate = 1.0
+  }
+
+  backend {
+    group          = module.mig.instance_group
+    balancing_mode = "CONNECTION"
+    # capacity_scaler = 1.0
+  }
+}
+
+resource "google_compute_address" "default" {
+  name = "vault-ip-${var.unique_id}"
+}
+
+resource "google_compute_forwarding_rule" "default" {
+  provider        = google-beta
+  name            = "vault-fr-${var.unique_id}"
+  port_range      = 8200
+  backend_service = google_compute_region_backend_service.default.id
+  ip_address      = google_compute_address.default.id
+}
