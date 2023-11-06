@@ -7,6 +7,16 @@
     mode: '0700'
   when: vault_audit_enable
 
+- name: Copying rsyslog file
+  ansible.builtin.template:
+    src: rsyslog.conf
+    dest: /etc/rsyslog.d/31-vault.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload Rsyslog daemon
+
 - name: Copying TLS CA certificate
   ansible.builtin.copy:
     src: '{{ vault_tls_ca_cert_file }}'

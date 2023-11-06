@@ -13,3 +13,11 @@
     daemon_reload: true
   when:
     - not packer_build
+
+- name: Reload Rsyslog daemon
+  systemd:
+    name: rsyslog
+    state: restarted
+    daemon_reload: true
+  when:
+    - not packer_build
