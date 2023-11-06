@@ -32,18 +32,22 @@ metrics:
   service:
     pipelines:
       vault:
-        receivers:
-          - vault
+        receivers: [vault]
+
 logging:
   receivers:
     vault_audit:
       type: vault_audit
       include_paths: [/var/log/vault/audit.log]
+    vault_syslog:
+      type: files
+      include_paths: [/var/log/vault.log]
   service:
     pipelines:
-      vault:
-        receivers:
-          - vault_audit
+      vault_audit:
+        receivers: [vault_audit]
+      vault_syslog:
+        receivers: [vault_syslog]
 EOF
 
 systemctl restart google-cloud-ops-agent
@@ -58,18 +62,20 @@ cloud:
   provider: 'gce'
   gce_tag: 'vault-node'
 
+enterprise: true
+vault_license_string: '${vault_license}'
 vault_storage_backend: 'integrated'
-vault_version: '1.14.1'
 vault_tls_ca_cert_file: 'tls/ca.pem'
 vault_tls_cert_file: 'tls/vault.pem'
 vault_tls_key_file: 'tls/vault.key'
+vault_version: '${vault_version}'
 
 vault_seal:
   type: gcpckms
   project: ${project_id}
   region: ${kms_location}
   key_ring: ${key_ring}
-  crypto_key: vault-unseal
+  crypto_key: ${crypto_key}
 
 vault_unauthenticated_metrics_access: true
 vault_telemetry:

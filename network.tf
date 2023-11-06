@@ -1,5 +1,6 @@
 locals {
-  subnet_name = "snet-${var.region}"
+  subnet_name       = "snet-${var.region}"
+  proxy_subnet_name = "proxy-snet-${var.region}"
 }
 
 module "network" {
@@ -96,6 +97,14 @@ module "network" {
       subnet_flow_logs_interval = "INTERVAL_10_MIN"
       subnet_flow_logs_sampling = 0.7
       subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
+    },
+    {
+      subnet_name           = local.proxy_subnet_name
+      subnet_ip             = var.proxy_subnet_cidr
+      subnet_region         = var.region
+      subnet_private_access = "false"
+      purpose               = "REGIONAL_MANAGED_PROXY"
+      role                  = "ACTIVE"
     }
   ]
 }

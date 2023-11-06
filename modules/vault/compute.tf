@@ -13,10 +13,13 @@ module "instance_template" {
     {
       ansible_bucket_name = var.ansible_bucket_name
       key_ring            = module.kms.keyring_name
+      crypto_key          = var.keys[0]
       project_id          = var.project_id
       kms_location        = var.kms_location
       region              = var.region
       namespace           = "vault-${var.unique_id}"
+      vault_license       = var.vault_license
+      vault_version       = var.vault_version
   })
   subnetwork         = var.subnet_name
   subnetwork_project = var.project_id
@@ -48,5 +51,10 @@ module "mig" {
   target_size         = var.mig_target_size
   hostname            = "vault-${var.unique_id}"
   instance_template   = module.instance_template.self_link
-  depends_on          = [module.compute_service_account]
+  named_ports = [{
+    name = "vault"
+    port = 8200
+  }]
+
+  depends_on = [module.compute_service_account]
 }

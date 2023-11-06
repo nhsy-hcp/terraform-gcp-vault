@@ -19,6 +19,12 @@ variable "subnet_cidr" {
   default = "10.64.0.0/16"
 }
 
+variable "proxy_subnet_cidr" {
+  type    = string
+  default = "10.65.0.0/16"
+}
+
+
 variable "google_apis" {
   type = set(string)
   default = [
@@ -35,4 +41,14 @@ variable "domain_name" {
 variable "mig_target_size" {
   type    = number
   default = 3
+}
+
+variable "vault_license" {
+  type    = string
+  default = ""
+}
+
+variable "vault_version" {
+  type    = string
+  default = "1.14.5"
 }

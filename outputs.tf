@@ -6,5 +6,5 @@ output "unique_id" {
 }
 
 output "vault_url" {
-  value = "https://vault.${var.domain_name}:8200"
+  value = "https://vault.${var.domain_name}"
 }

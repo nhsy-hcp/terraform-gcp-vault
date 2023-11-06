@@ -15,6 +15,11 @@ variable "network_name" {
   type        = string
 }
 
+
+variable "proxy_subnetwork_name" {
+  description = "Proxy subnetwork"
+  type        = string
+}
 variable "preemptible" {
   description = "Create preemptive forward proxy instance"
   type        = bool
@@ -138,4 +143,11 @@ variable "tls_organization" {
   type    = string
   default = "ACME"
 }
+variable "vault_license" {
+  type    = string
+  default = ""
+}
 
+variable "vault_version" {
+  type = string
+}
