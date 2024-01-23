@@ -4,7 +4,7 @@ module "vault" {
   network_name          = module.network.network_name
   project_id            = var.project_id
   region                = var.region
-  subnet_name           = module.network.subnets_names[1]
+  subnet_name           = module.network.subnet_name
   tags                  = ["iap", "vault-node"]
   unique_id             = module.common.unique_id
   zone                  = module.common.zone

@@ -2,91 +2,69 @@
 # Create vpc network
 ###
 
-module "vpc" {
-  source = "terraform-google-modules/network/google//modules/vpc"
-
-  version                                = "~> 7.4.0"
-  auto_create_subnetworks                = var.auto_create_subnetworks
-  delete_default_internet_gateway_routes = var.delete_default_internet_gateway_routes
-  description                            = var.description
-  network_name                           = var.network_name
-  project_id                             = var.project_id
-  routing_mode                           = var.routing_mode
-  shared_vpc_host                        = var.shared_vpc_host
+resource "google_compute_network" "vpc" {
+  name                            = var.network_name
+  auto_create_subnetworks         = var.auto_create_subnetworks
+  routing_mode                    = var.routing_mode
+  project                         = var.project
+  description                     = var.description
+  delete_default_routes_on_create = var.delete_default_internet_gateway_routes
 }
 
 ###
-# Create subnets
+# Create subnet
 ###
+resource "google_compute_subnetwork" "subnetwork" {
+  name                     = var.subnet.subnet_name
+  ip_cidr_range            = var.subnet.subnet_ip
+  region                   = var.subnet.subnet_region
+  private_ip_google_access = lookup(var.subnet, "subnet_private_access", "false")
 
-module "subnets" {
-  source  = "terraform-google-modules/network/google//modules/subnets"
-  version = "~> 7.4.0"
-
-  network_name     = module.vpc.network_name
-  project_id       = var.project_id
-  secondary_ranges = var.secondary_ranges
-  subnets          = var.subnets
-}
-
-###
-# Create routes
-###
-
-module "routes" {
-  source  = "terraform-google-modules/network/google//modules/routes"
-  version = "~> 7.4.0"
-
-  module_depends_on = [module.subnets.subnets]
-  network_name      = module.vpc.network_name
-  project_id        = var.project_id
-  routes            = var.routes
-}
-
-###
-# Create firewall rules
-###
-
-module "firewall" {
-  source  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version = "~> 7.4.0"
-
-  custom_rules       = var.firewall_custom_rules
-  http_source_ranges = var.https_source_ranges
-  #http_target_tags    = var.https_target_tags
-  https_source_ranges = var.https_source_ranges
-  https_target_tags   = var.http_target_tags
-  network             = module.vpc.network_name
-  project_id          = var.project_id
-  ssh_source_ranges   = var.ssh_source_ranges
-  ssh_target_tags     = var.ssh_target_tags
-}
-
-###
-# Create cloud router
-###
-
-module "cloud_router" {
-  source  = "terraform-google-modules/cloud-router/google"
-  version = "~> 6.0.1"
-
-  name    = var.router_name
-  network = module.vpc.network_self_link
-  project = var.project_id
-  region  = var.region
-
-  nats = [
-    {
-      #log_config_enable                  = var.log_config_enable
-      #log_config_filter                  = var.log_config_filter
-      name = var.router_nat_name
-      #nat_ip_allocate_option             = var.nat_ip_allocate_option
-      #nat_ips                            = var.nat_ips
-      project = var.project_id
-      router  = module.cloud_router.router.name
-      region  = var.region
-      #source_subnetwork_ip_ranges_to_nat = var.source_subnetwork_ip_ranges_to_nat
+  dynamic "log_config" {
+    for_each = coalesce(lookup(var.subnet, "subnet_flow_logs", null), false) ? [{
+      aggregation_interval = var.subnet.subnet_flow_logs_interval
+      flow_sampling        = var.subnet.subnet_flow_logs_sampling
+      metadata             = var.subnet.subnet_flow_logs_metadata
+      filter_expr          = var.subnet.subnet_flow_logs_filter
+      metadata_fields      = var.subnet.subnet_flow_logs_metadata_fields
+    }] : []
+    content {
+      aggregation_interval = log_config.value.aggregation_interval
+      flow_sampling        = log_config.value.flow_sampling
+      metadata             = log_config.value.metadata
+      filter_expr          = log_config.value.filter_expr
+      metadata_fields      = log_config.value.metadata == "CUSTOM_METADATA" ? log_config.value.metadata_fields : null
     }
-  ]
+  }
 
+  network     = google_compute_network.vpc.self_link
+  project     = var.project
+  description = lookup(var.subnet, "description", null)
+  purpose     = lookup(var.subnet, "purpose", null)
+  role        = lookup(var.subnet, "role", null)
+
+  lifecycle {
+    ignore_changes = [
+      secondary_ip_range # Ignore changes to secondary ranges for gke autopilot
+    ]
+  }
+}
+
+###
+# Create cloud router and nat gateway
+###
+resource "google_compute_router" "router" {
+  name    = var.router_name
+  network = google_compute_network.vpc.self_link
+  region  = var.region
+  project = var.project
+}
+
+resource "google_compute_router_nat" "nat" {
+  name                               = var.router_nat_name
+  project                            = var.project
+  region                             = var.region
+  router                             = google_compute_router.router.name
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }

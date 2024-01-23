@@ -25,7 +25,7 @@ module "instance_template" {
   subnetwork_project = var.project_id
   tags               = var.tags
 
-  depends_on = [module.compute_service_account]
+  #  depends_on = [module.compute_service_account]
 }
 
 #module "compute_instance" {
@@ -56,5 +56,5 @@ module "mig" {
     port = 8200
   }]
 
-  depends_on = [module.compute_service_account]
+  #  depends_on = [module.compute_service_account]
 }

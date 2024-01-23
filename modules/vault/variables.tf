@@ -85,7 +85,7 @@ variable "zone" {
   type = string
 }
 
-variable "compute_sa_roles" {
+variable "vault_sa_roles" {
   type = set(string)
   default = [
     "roles/logging.logWriter",
@@ -98,7 +98,6 @@ variable "compute_sa_roles" {
     "roles/storage.objectViewer",
   ]
 }
-
 
 variable "mig_target_size" {
   type    = number
@@ -150,4 +149,14 @@ variable "vault_license" {
 
 variable "vault_version" {
   type = string
+}
+
+variable "cloud_armor_blacklist_cidrs" {
+  type    = list(string)
+  default = ["1.1.1.1"]
+}
+
+variable "load_balancing_scheme" {
+  type    = string
+  default = "EXTERNAL"
 }
