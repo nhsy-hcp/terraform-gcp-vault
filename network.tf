@@ -38,7 +38,30 @@ resource "google_compute_firewall" "iap" {
   target_tags   = ["iap"]
 }
 
-resource "google_compute_firewall" "external_vault" {
+resource "google_compute_firewall" "internal" {
+  name        = "allow-internal-${module.common.unique_id}"
+  network     = module.network.network_self_link
+  description = "Allow internal"
+  allow {
+    ports = [
+      "22",
+      "80",
+      "443",
+      "8200",
+      "8201",
+    ]
+    protocol = "tcp"
+  }
+  allow {
+    ports    = []
+    protocol = "icmp"
+  }
+  source_ranges = [var.subnet_cidr]
+  target_tags   = ["vault"]
+}
+
+
+resource "google_compute_firewall" "vault" {
   name        = "allow-vault-${module.common.unique_id}"
   network     = module.network.network_self_link
   description = "Allow vault access"
@@ -46,8 +69,10 @@ resource "google_compute_firewall" "external_vault" {
   allow {
     protocol = "tcp"
     ports = [
-      "8200"
+      "8200",
+      "8201"
     ]
   }
   source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["vault"]
 }

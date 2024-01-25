@@ -50,5 +50,20 @@ variable "vault_license" {
 
 variable "vault_version" {
   type    = string
-  default = "1.14.5"
+  default = "1.15.4"
+}
+
+variable "vault_storage_backend" {
+  type    = string
+  default = "integrated"
+}
+
+variable "hostname" {
+  type    = string
+  default = "vault"
+}
+
+variable "letsencrypt_email" {
+  type    = string
+  default = "nobody@example.com"
 }

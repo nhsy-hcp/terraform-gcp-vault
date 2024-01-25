@@ -5,6 +5,7 @@ output "unique_id" {
   value = module.common.unique_id
 }
 
+# Change vault listener port if not 443
 output "vault_url" {
-  value = "https://vault.${var.domain_name}:8200"
+  value = "https://${local.fqdn}"
 }

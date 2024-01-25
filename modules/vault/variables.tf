@@ -45,13 +45,13 @@ variable "service_account_name" {
 variable "source_image_family" {
   description = "Source image family for template"
   type        = string
-  default     = "debian-10"
+  default     = "ubuntu-2004-lts"
 }
 
 variable "source_image_project" {
   description = "Source image project"
   type        = string
-  default     = "debian-cloud"
+  default     = "ubuntu-os-cloud"
 }
 
 variable "subnet_name" {
@@ -75,6 +75,15 @@ variable "disk_size_gb" {
   description = "Boot disk size in GB"
   type        = string
   default     = "10"
+}
+
+variable "vault_storage_backend" {
+  type    = string
+  default = "integrated"
+  validation {
+    condition     = contains(["file", "integrated"], var.vault_storage_backend)
+    error_message = "Valid values: file, integrated"
+  }
 }
 
 variable "unique_id" {
@@ -133,6 +142,11 @@ variable "keys" {
 ###
 # TLS variables
 ###
+
+variable "fqdn" {
+  type = string
+}
+
 variable "tls_domain_name" {
   type    = string
   default = "example.com"
@@ -159,4 +173,14 @@ variable "cloud_armor_blacklist_cidrs" {
 variable "load_balancing_scheme" {
   type    = string
   default = "EXTERNAL"
+}
+
+variable "lb_tls_private_key" {
+  type    = string
+  default = null
+}
+
+variable "lb_tls_certificate" {
+  type    = string
+  default = null
 }

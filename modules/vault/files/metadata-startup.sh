@@ -60,11 +60,11 @@ cat <<EOF > group_vars/vault.yml
 ---
 cloud:
   provider: 'gce'
-  gce_tag: 'vault-node'
+  gce_tag: 'vault'
 
 enterprise: true
 vault_license_string: '${vault_license}'
-vault_storage_backend: 'integrated'
+vault_storage_backend: '${vault_storage_backend}'
 vault_tls_ca_cert_file: 'tls/ca.pem'
 vault_tls_cert_file: 'tls/vault.pem'
 vault_tls_key_file: 'tls/vault.key'
