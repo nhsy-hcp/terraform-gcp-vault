@@ -5,7 +5,7 @@ resource "google_compute_security_policy" "default" {
 
   rule {
     action   = "allow"
-    priority = "2147483647"
+    priority = "1000"
 
     match {
       versioned_expr = "SRC_IPS_V1"
@@ -18,19 +18,19 @@ resource "google_compute_security_policy" "default" {
     description = "Default rule, higher priority overrides it"
   }
 
-  # Blacklist traffic from certain ip address cidrs
+  # Deny all other traffic
   rule {
-    action   = "deny(403)"
-    priority = "1000"
+    action   = "deny"
+    priority = "2147483647"
 
     match {
       versioned_expr = "SRC_IPS_V1"
 
       config {
-        src_ip_ranges = var.cloud_armor_blacklist_cidrs
+        src_ip_ranges = ["*"]
       }
     }
 
-    description = "Deny traffic from blacklisted cidr ranges"
+    description = "Deny traffic"
   }
 }

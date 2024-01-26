@@ -3,11 +3,12 @@ cluster_name = "{{ vault_cluster_name }}"
 {% endif %}
 
 listener "tcp" {
-{% if (vault_tls_cert_file is defined or vault_tls_cert_string is defined) and (vault_tls_key_file is defined or vault_tls_key_string is defined) %}
+{% if (vault_tls_cert_file is defined) and (vault_tls_key_file is defined) %}
 {% set proto="https" %}
   address                  = "{{ vault_client_addr }}:{{ vault_api_port }}"
-  tls_cert_file            = "{{ vault_tls_directory }}/vault.crt"
-  tls_key_file             = "{{ vault_tls_directory }}/vault.key"
+  cluster_address          = "{{ vault_client_addr }}:{{ vault_cluster_port }}"
+  tls_cert_file            = "{{ vault_tls_directory }}/{{ vault_tls_cert_file | basename }}"
+  tls_key_file             = "{{ vault_tls_directory }}/{{ vault_tls_key_file | basename }}"
   tls_disable_client_certs = {{ vault_tls_disable_client_certs | lower }}
 {% else %}
 {% set proto="http" %}
@@ -20,6 +21,15 @@ listener "tcp" {
   }
 {% endif %}
 }
+{% if vault_additional_listener and (vault_additional_tls_cert_file is defined) and (vault_additional_tls_key_file is defined) %}
+listener "tcp" {
+  address                  = "{{ vault_client_addr }}:{{ vault_additional_api_port }}"
+  cluster_address          = "{{ vault_client_addr }}:{{ vault_additional_cluster_port }}"
+  tls_cert_file            = "{{ vault_tls_directory }}/{{ vault_additional_tls_cert_file | basename }}"
+  tls_key_file             = "{{ vault_tls_directory }}/{{ vault_additional_tls_key_file | basename }}"
+  tls_disable_client_certs = {{ vault_tls_disable_client_certs | lower }}
+}
+{% endif %}
 
 {% if vault_storage_backend == "integrated" %}
 disable_mlock = true
@@ -32,12 +42,12 @@ storage "raft" {
   retry_join {
     leader_api_addr         = "{{ proto }}://{{ hostvars[vault_server]['ansible_fqdn'] }}:{{ vault_api_port }}"
 {% if proto == "https" %}
-{% if vault_tls_ca_cert_file is defined or vault_tls_ca_cert_string is defined %}
-    leader_ca_cert_file     = "{{ vault_tls_directory }}/ca.crt"
+{% if vault_tls_ca_file %}
+    leader_ca_file     = "{{ vault_tls_directory }}/{{ vault_tls_ca_file | basename }}"
 {% endif %}
 {% if not vault_tls_disable_client_certs %}
-    leader_client_cert_file = "{{ vault_tls_directory }}/vault.crt"
-    leader_client_key_file  = "{{ vault_tls_directory }}/vault.key"
+    leader_client_cert_file = "{{ vault_tls_directory }}/{{ vault_tls_cert_file | basename }}"
+    leader_client_key_file  = "{{ vault_tls_directory }}/{{ vault_tls_key_file | basename }}"
 {% endif %}
     leader_tls_servername   = "{{ vault_leader_tls_servername | default(ansible_fqdn) }}"
 {% endif %}
@@ -53,8 +63,8 @@ storage "raft" {
     auto_join             = "provider=aws tag_key={{ cloud.aws_tag_key }} tag_value={{ cloud.aws_tag_value }}"
 {% endif %}
     auto_join_scheme      = "{{ proto }}"
-{% if vault_tls_ca_cert_file is defined or vault_tls_ca_cert_string is defined %}
-    leader_ca_cert_file   = "{{ vault_tls_directory }}/ca.crt"
+{% if vault_tls_ca_file is defined  %}
+    leader_ca_cert_file   = "{{ vault_tls_directory }}/{{ vault_tls_ca_file | basename }}"
 {% endif %}
     leader_tls_servername = "{{ vault_leader_tls_servername | default(ansible_fqdn) }}"
   }

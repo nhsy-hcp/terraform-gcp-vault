@@ -65,10 +65,14 @@ cloud:
 enterprise: true
 vault_license_string: '${vault_license}'
 vault_storage_backend: '${vault_storage_backend}'
-vault_tls_ca_cert_file: 'tls/ca.pem'
+vault_tls_ca_file: 'tls/ca.pem'
 vault_tls_cert_file: 'tls/vault.pem'
 vault_tls_key_file: 'tls/vault.key'
 vault_version: '${vault_version}'
+vault_additional_listener: true
+vault_additional_tls_ca_file: 'tls/le-ca.pem'
+vault_additional_tls_cert_file: 'tls/le-vault.pem'
+vault_additional_tls_key_file: 'tls/le-vault.key'
 
 vault_seal:
   type: gcpckms

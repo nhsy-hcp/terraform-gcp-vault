@@ -15,11 +15,6 @@ variable "network_name" {
   type        = string
 }
 
-
-variable "proxy_subnetwork_name" {
-  description = "Proxy subnetwork"
-  type        = string
-}
 variable "preemptible" {
   description = "Create preemptive forward proxy instance"
   type        = bool
@@ -52,6 +47,11 @@ variable "source_image_project" {
   description = "Source image project"
   type        = string
   default     = "ubuntu-os-cloud"
+}
+
+variable "proxy_subnet_name" {
+  description = "Proxy subnet name"
+  type        = string
 }
 
 variable "subnet_name" {
@@ -165,22 +165,19 @@ variable "vault_version" {
   type = string
 }
 
-variable "cloud_armor_blacklist_cidrs" {
-  type    = list(string)
-  default = ["1.1.1.1"]
-}
-
 variable "load_balancing_scheme" {
   type    = string
   default = "EXTERNAL"
 }
 
-variable "lb_tls_private_key" {
-  type    = string
-  default = null
+variable "letsencrypt_ca" {
+  type = string
 }
 
-variable "lb_tls_certificate" {
-  type    = string
-  default = null
+variable "letsencrypt_certificate" {
+  type = string
+}
+
+variable "letsencrypt_private_key" {
+  type = string
 }

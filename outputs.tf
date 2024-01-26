@@ -9,3 +9,7 @@ output "unique_id" {
 output "vault_url" {
   value = "https://${local.fqdn}"
 }
+
+output "mig_name" {
+  value = module.vault.mig_name
+}

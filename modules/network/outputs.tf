@@ -18,6 +18,16 @@ output "network_self_link" {
   value       = google_compute_network.vpc.self_link
 }
 
+output "proxy_subnet" {
+  description = "The proxy_subnet resource"
+  value       = google_compute_subnetwork.proxy_subnetwork
+}
+
+output "proxy_subnet_name" {
+  description = "The proxy_subnet resource"
+  value       = google_compute_subnetwork.proxy_subnetwork.name
+}
+
 output "subnet" {
   description = "The subnet resource"
   value       = google_compute_subnetwork.subnetwork

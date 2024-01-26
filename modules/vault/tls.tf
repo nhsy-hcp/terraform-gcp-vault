@@ -29,25 +29,43 @@ resource "tls_self_signed_cert" "vault" {
 }
 
 resource "google_storage_bucket_object" "ca_cert" {
-  bucket  = var.ansible_bucket_name
-  name    = "tls/ca.pem"
-  content = tls_self_signed_cert.vault.cert_pem
-  #  content      = acme_certificate.default.issuer_pem
+  bucket       = var.ansible_bucket_name
+  name         = "tls/ca.pem"
+  content      = tls_self_signed_cert.vault.cert_pem
   content_type = "text/plain"
 }
 
 resource "google_storage_bucket_object" "vault_cert" {
-  bucket  = var.ansible_bucket_name
-  name    = "tls/vault.pem"
-  content = tls_self_signed_cert.vault.cert_pem
-  #  content      = acme_certificate.default.certificate_pem
+  bucket       = var.ansible_bucket_name
+  name         = "tls/vault.pem"
+  content      = tls_self_signed_cert.vault.cert_pem
   content_type = "text/plain"
 }
 
 resource "google_storage_bucket_object" "vault_key" {
-  bucket  = var.ansible_bucket_name
-  name    = "tls/vault.key"
-  content = tls_self_signed_cert.vault.private_key_pem
-  #  content      = acme_certificate.default.private_key_pem
+  bucket       = var.ansible_bucket_name
+  name         = "tls/vault.key"
+  content      = tls_self_signed_cert.vault.private_key_pem
+  content_type = "text/plain"
+}
+
+resource "google_storage_bucket_object" "le_ca_cert" {
+  bucket       = var.ansible_bucket_name
+  name         = "tls/le-ca.pem"
+  content      = var.letsencrypt_ca
+  content_type = "text/plain"
+}
+
+resource "google_storage_bucket_object" "le_vault_cert" {
+  bucket       = var.ansible_bucket_name
+  name         = "tls/le-vault.pem"
+  content      = var.letsencrypt_certificate
+  content_type = "text/plain"
+}
+
+resource "google_storage_bucket_object" "le_vault_key" {
+  bucket       = var.ansible_bucket_name
+  name         = "tls/le-vault.key"
+  content      = var.letsencrypt_private_key
   content_type = "text/plain"
 }

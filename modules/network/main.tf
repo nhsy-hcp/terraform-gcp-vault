@@ -42,12 +42,35 @@ resource "google_compute_subnetwork" "subnetwork" {
   description = lookup(var.subnet, "description", null)
   purpose     = lookup(var.subnet, "purpose", null)
   role        = lookup(var.subnet, "role", null)
+}
 
-  lifecycle {
-    ignore_changes = [
-      secondary_ip_range # Ignore changes to secondary ranges for gke autopilot
-    ]
+resource "google_compute_subnetwork" "proxy_subnetwork" {
+  name                     = var.proxy_subnet.subnet_name
+  ip_cidr_range            = var.proxy_subnet.subnet_ip
+  region                   = var.proxy_subnet.subnet_region
+  private_ip_google_access = lookup(var.proxy_subnet, "subnet_private_access", "false")
+
+  dynamic "log_config" {
+    for_each = coalesce(lookup(var.proxy_subnet, "subnet_flow_logs", null), false) ? [{
+      aggregation_interval = var.proxy_subnet.subnet_flow_logs_interval
+      flow_sampling        = var.proxy_subnet.subnet_flow_logs_sampling
+      metadata             = var.proxy_subnet.subnet_flow_logs_metadata
+      filter_expr          = var.proxy_subnet.subnet_flow_logs_filter
+      metadata_fields      = var.proxy_subnet.subnet_flow_logs_metadata_fields
+    }] : []
+    content {
+      aggregation_interval = log_config.value.aggregation_interval
+      flow_sampling        = log_config.value.flow_sampling
+      metadata             = log_config.value.metadata
+      filter_expr          = log_config.value.filter_expr
+      metadata_fields      = log_config.value.metadata == "CUSTOM_METADATA" ? log_config.value.metadata_fields : null
+    }
   }
+  network     = google_compute_network.vpc.self_link
+  project     = var.project
+  description = lookup(var.proxy_subnet, "description", null)
+  purpose     = lookup(var.proxy_subnet, "purpose", null)
+  role        = lookup(var.proxy_subnet, "role", null)
 }
 
 ###

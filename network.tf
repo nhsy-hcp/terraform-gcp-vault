@@ -1,12 +1,12 @@
+data "google_compute_lb_ip_ranges" "default" {}
 locals {
   network_name      = "vpc-${module.common.unique_id}"
   subnet_name       = "snet-${module.common.unique_id}"
-  proxy_subnet_name = "proxy-snet-${var.region}"
+  proxy_subnet_name = "proxy-snet-${var.region}-${module.common.unique_id}"
 }
 
 module "network" {
   source = "./modules/network"
-
 
   network_name    = local.network_name
   project         = var.project_id
@@ -22,6 +22,14 @@ module "network" {
     subnet_flow_logs_interval = "INTERVAL_10_MIN"
     subnet_flow_logs_sampling = 0.7
     subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
+  }
+  proxy_subnet = {
+    purpose               = "REGIONAL_MANAGED_PROXY"
+    role                  = "ACTIVE"
+    subnet_name           = local.proxy_subnet_name
+    subnet_ip             = var.proxy_subnet_cidr
+    subnet_region         = var.region
+    subnet_private_access = "false"
   }
 }
 
@@ -48,7 +56,7 @@ resource "google_compute_firewall" "internal" {
       "80",
       "443",
       "8200",
-      "8201",
+      "8201"
     ]
     protocol = "tcp"
   }
@@ -59,20 +67,30 @@ resource "google_compute_firewall" "internal" {
   source_ranges = [var.subnet_cidr]
   target_tags   = ["vault"]
 }
-
-
-resource "google_compute_firewall" "vault" {
-  name        = "allow-vault-${module.common.unique_id}"
+resource "google_compute_firewall" "vault_nlb" {
+  name        = "allow-vault-api-nlb-${module.common.unique_id}"
   network     = module.network.network_self_link
-  description = "Allow vault access"
+  description = "Allow vault nlb access"
 
   allow {
     protocol = "tcp"
     ports = [
-      "8200",
-      "8201"
+      "8300"
     ]
   }
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = concat(data.google_compute_lb_ip_ranges.default.http_ssl_tcp_internal, [var.proxy_subnet_cidr])
   target_tags   = ["vault"]
 }
+
+#resource "google_compute_firewall" "vault_external" {
+#  name        = "allow-vault-api-external-${module.common.unique_id}"
+#  network     = module.network.network_self_link
+#  description = "Allow vault api external access"
+#
+#  allow {
+#    protocol = "tcp"
+#    ports    = ["8300"]
+#  }
+#  source_ranges = ["0.0.0.0/0"]
+#  target_tags   = ["vault"]
+#}

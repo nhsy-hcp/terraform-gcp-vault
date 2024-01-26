@@ -53,7 +53,26 @@ variable "subnet" {
     purpose                          = optional(string)
     role                             = optional(string)
   })
-  description = "The subnets being created"
+  description = "The subnet being created"
+}
+
+variable "proxy_subnet" {
+  type = object({
+    subnet_name                      = string
+    subnet_ip                        = string
+    subnet_region                    = string
+    subnet_private_access            = optional(string, "false")
+    subnet_flow_logs                 = optional(string, "false")
+    subnet_flow_logs_interval        = optional(string, "INTERVAL_5_SEC")
+    subnet_flow_logs_sampling        = optional(string, "0.5")
+    subnet_flow_logs_metadata        = optional(string, "INCLUDE_ALL_METADATA")
+    subnet_flow_logs_filter          = optional(string, "true")
+    subnet_flow_logs_metadata_fields = optional(list(string), [])
+    description                      = optional(string)
+    purpose                          = optional(string)
+    role                             = optional(string)
+  })
+  description = "The subnet being created"
 }
 
 variable "router_name" {

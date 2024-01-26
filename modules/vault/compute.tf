@@ -39,7 +39,7 @@ module "mig" {
   named_ports = [
     {
       name = "vault-api"
-      port = 8200
+      port = 8300
     },
     {
       name = "vault-cluster"
