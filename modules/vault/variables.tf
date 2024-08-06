@@ -191,3 +191,8 @@ variable "enable_cloud_armor" {
   type    = bool
   default = false
 }
+
+variable "create_external_lb" {
+  type    = bool
+  default = false
+}

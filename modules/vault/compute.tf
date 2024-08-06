@@ -38,12 +38,12 @@ module "mig" {
   instance_template   = module.instance_template.self_link
   named_ports = [
     {
-      name = "vault-api"
-      port = 8300
+      name = "vault-api-8200"
+      port = 8200
     },
     {
-      name = "vault-cluster"
-      port = 8201
+      name = "vault-api-8300"
+      port = 8300 # 2nd API listener with LetsEncrypt certs
     }
   ]
 }

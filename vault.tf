@@ -22,6 +22,7 @@ module "vault" {
   letsencrypt_certificate = "${acme_certificate.default.certificate_pem}${acme_certificate.default.issuer_pem}"
   letsencrypt_private_key = acme_certificate.default.private_key_pem
   machine_type            = var.machine_type
+  create_external_lb      = true
 
   depends_on = [
     google_project_service.apis,

@@ -56,7 +56,8 @@ resource "google_compute_firewall" "internal" {
       "80",
       "443",
       "8200",
-      "8201"
+      "8201",
+      "8300"
     ]
     protocol = "tcp"
   }
