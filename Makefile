@@ -23,7 +23,6 @@ output:
 
 destroy: init
 	@terraform destroy -auto-approve
-#	-@rm routes.tf
 
 mig-replace: init
 	@terraform destroy -auto-approve -target module.vault.module.mig.google_compute_region_instance_group_manager.mig

@@ -1,4 +1,5 @@
 resource "google_compute_security_policy" "default" {
+  count       = var.enable_cloud_armor ? 1 : 0
   name        = "vault-policy-${var.unique_id}"
   description = "Vault security policy"
   type        = "CLOUD_ARMOR"

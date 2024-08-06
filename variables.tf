@@ -67,3 +67,13 @@ variable "letsencrypt_email" {
   type    = string
   default = "nobody@example.com"
 }
+
+variable "machine_type" {
+  type    = string
+  default = null
+}
+
+variable "disk_size_gb" {
+  type    = number
+  default = null
+}

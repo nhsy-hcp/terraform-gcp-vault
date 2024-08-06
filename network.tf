@@ -67,19 +67,26 @@ resource "google_compute_firewall" "internal" {
   source_ranges = [var.subnet_cidr]
   target_tags   = ["vault"]
 }
+
 resource "google_compute_firewall" "vault_nlb" {
-  name        = "allow-vault-api-nlb-${module.common.unique_id}"
+  name        = "allow-vault-nlb-${module.common.unique_id}"
   network     = module.network.network_self_link
   description = "Allow vault nlb access"
 
   allow {
     protocol = "tcp"
     ports = [
+      "8200",
       "8300"
     ]
   }
-  source_ranges = concat(data.google_compute_lb_ip_ranges.default.http_ssl_tcp_internal, [var.proxy_subnet_cidr])
-  target_tags   = ["vault"]
+  source_ranges = concat(
+    data.google_compute_lb_ip_ranges.default.http_ssl_tcp_internal,
+    data.google_compute_lb_ip_ranges.default.network,
+    [var.proxy_subnet_cidr]
+  )
+
+  target_tags = ["vault"]
 }
 
 #resource "google_compute_firewall" "vault_external" {

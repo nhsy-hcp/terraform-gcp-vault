@@ -74,7 +74,7 @@ variable "template_name" {
 variable "disk_size_gb" {
   description = "Boot disk size in GB"
   type        = string
-  default     = "10"
+  default     = "100"
 }
 
 variable "vault_storage_backend" {
@@ -180,4 +180,14 @@ variable "letsencrypt_certificate" {
 
 variable "letsencrypt_private_key" {
   type = string
+}
+
+variable "https_health_check_request_path" {
+  type    = string
+  default = "/v1/sys/health?sealedcode=200&uninitcode=200"
+}
+
+variable "enable_cloud_armor" {
+  type    = bool
+  default = false
 }
