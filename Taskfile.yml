@@ -1,0 +1,62 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+
+  default:
+    aliases: ["all"]
+    desc: Deploy infrastructure
+    cmds:
+      - task: tf-init
+      - task: tf-apply
+
+  destroy:
+    desc: Destroy infrastructure
+    cmds:
+      - task: tf-destroy
+
+  redeploy:
+    desc: Redeploy mig
+    cmd: terraform apply -auto-approve -replace="module.vault.module.mig.google_compute_region_instance_group_manager.mig"
+
+  tf-init:
+    cmd: terraform init
+
+  tf-plan:
+    aliases: ["plan", "tfp"]
+    deps: [tf-init]
+    cmd: terraform plan
+
+  tf-apply:
+    aliases: ["tfa"]
+    deps: [tf-init]
+    cmd: terraform apply -auto-approve
+
+  tf-destroy:
+    aliases: ["tfd"]
+    cmd: terraform destroy -auto-approve
+
+  tf-output:
+    aliases: ["tfo"]
+    cmd: terraform output
+
+  ssh:
+    desc: SSH into the vault instance
+    cmd: gcloud compute ssh {{.INSTANCE}} --zone {{.ZONE}} --tunnel-through-iap
+    vars:
+      INSTANCE:
+        sh: gcloud compute instances list --format=json | jq -r '.[0].name'
+      ZONE:
+        sh: gcloud compute instances list --format=json | jq -r '.[0].zone | split("/") | .[-1]'
+
+  vault-init:
+    desc: Initialize vault
+    cmds:
+     - ./scripts/10-status.sh
+     - ./scripts/20-init.sh
+
+
+  vault-benchmark:
+    desc: Run vault benchmark
+    dir: vault-benchmark
+    cmd: vault-benchmark run -config=config.hcl
