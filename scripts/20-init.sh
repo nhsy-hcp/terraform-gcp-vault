@@ -1,3 +1,4 @@
+#!/bin/bash
 set -o pipefail
 
 export VAULT_ADDR=$(terraform output -raw vault_url)
