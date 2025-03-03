@@ -17,27 +17,35 @@ tasks:
 
   redeploy:
     desc: Redeploy mig
-    cmd: terraform apply -auto-approve -replace="module.vault.module.mig.google_compute_region_instance_group_manager.mig"
+    dir: ./terraform
+    cmds:
+     - terraform destroy -auto-approve -target="module.vault.module.mig.google_compute_region_instance_group_manager.mig"
+     - terraform apply -auto-approve
 
   tf-init:
+    dir: ./terraform
     cmd: terraform init
 
   tf-plan:
     aliases: ["plan", "tfp"]
     deps: [tf-init]
+    dir: ./terraform
     cmd: terraform plan
 
   tf-apply:
     aliases: ["tfa"]
     deps: [tf-init]
+    dir: ./terraform
     cmd: terraform apply -auto-approve
 
   tf-destroy:
     aliases: ["tfd"]
+    dir: ./terraform
     cmd: terraform destroy -auto-approve
 
   tf-output:
     aliases: ["tfo"]
+    dir: ./terraform
     cmd: terraform output
 
   ssh:
@@ -55,8 +63,27 @@ tasks:
      - ./scripts/10-status.sh
      - ./scripts/20-init.sh
 
-
   vault-benchmark:
     desc: Run vault benchmark
     dir: vault-benchmark
     cmd: vault-benchmark run -config=config.hcl
+
+  status:
+    desc: Run curl against vault
+    dir: ./terraform
+    cmds:
+     - |
+       while true; do curl -sv {{ .VAULT_ADDR }}/v1/sys/health || true; sleep 3; done
+    vars:
+      VAULT_ADDR:
+        sh: terraform output -raw vault_url
+
+  vault-ssh:
+    desc: SSH into vault
+    cmds:
+      - gcloud compute ssh {{ .INSTANCE }} --zone {{ .ZONE }} --tunnel-through-iap
+    vars:
+      INSTANCE:
+        sh: gcloud compute instances list --filter="name~vault" --format="value(name)"| head -n1
+      ZONE:
+        sh: gcloud compute instances list --filter="name~vault" --format="value(zone)" | head -n1

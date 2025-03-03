@@ -8,7 +8,7 @@
         name: vault
         state: stopped
         enabled: false
-      
+
     - name: removing all Vault files and directories
       ansible.builtin.file:
         path: '{{ item }}'
@@ -18,7 +18,7 @@
       - '{{ vault_home_directory }}'
       - '{{ vault_data_directory }}'
       - '{{ vault_install_directory }}/vault'
-    
+
     - name: removing vault user
       ansible.builtin.user:
         name: '{{ vault_user }}'
