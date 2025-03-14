@@ -1,6 +1,6 @@
 # common
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -41,4 +41,4 @@ No modules.
 | <a name="output_unique_id"></a> [unique\_id](#output\_unique\_id) | n/a |
 | <a name="output_zone"></a> [zone](#output\_zone) | n/a |
 | <a name="output_zones"></a> [zones](#output\_zones) | n/a |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

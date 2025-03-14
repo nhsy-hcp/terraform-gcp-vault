@@ -1,6 +1,6 @@
 # vault
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -103,4 +103,4 @@ No requirements.
 | <a name="output_mig_name"></a> [mig\_name](#output\_mig\_name) | n/a |
 | <a name="output_mig_self_link"></a> [mig\_self\_link](#output\_mig\_self\_link) | n/a |
 | <a name="output_vault_ca_cert"></a> [vault\_ca\_cert](#output\_vault\_ca\_cert) | n/a |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

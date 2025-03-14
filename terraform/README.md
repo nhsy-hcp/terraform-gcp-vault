@@ -1,6 +1,6 @@
 # terraform
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -88,4 +88,4 @@
 | <a name="output_vault_external_ip_address"></a> [vault\_external\_ip\_address](#output\_vault\_external\_ip\_address) | n/a |
 | <a name="output_vault_fqdn"></a> [vault\_fqdn](#output\_vault\_fqdn) | n/a |
 | <a name="output_vault_internal_ip_address"></a> [vault\_internal\_ip\_address](#output\_vault\_internal\_ip\_address) | n/a |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

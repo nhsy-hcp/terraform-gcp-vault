@@ -1,6 +1,6 @@
 # network
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -56,4 +56,4 @@ No modules.
 | <a name="output_subnet_region"></a> [subnet\_region](#output\_subnet\_region) | The region of the subnet |
 | <a name="output_subnet_self_links"></a> [subnet\_self\_links](#output\_subnet\_self\_links) | The self\_link of the subnet |
 | <a name="output_subnets_ip_cidr_ranges"></a> [subnets\_ip\_cidr\_ranges](#output\_subnets\_ip\_cidr\_ranges) | The IP CIDR of the subnet |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
